@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Christophe Coenraets, http://coenraets.org -->
+<s:DataRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" width="100%">
+
+
+	<fx:Declarations>
+		<s:CurrencyFormatter id="cf" useCurrencySymbol="true" fractionalDigits="0" />
+		<s:NumberFormatter id="nf" fractionalDigits="2" />
+	</fx:Declarations>
+
+	<s:VGroup gap="1" width="100%">
+		<s:Label text="{data.value}" textAlign="center"  backgroundColor="#F0F0F0" height="40" verticalAlign="middle" width="106"  paddingRight="8"/>
+
+		<!--s:Label text="{data.change>0?'+':''}{nf.format(data.change)}" color="{data.change>0?0x006600:0xFF0000}" backgroundColor="#F0F0F0" height="40" verticalAlign="middle" width="119" textAlign="right" paddingRight="20"/-->
+	</s:VGroup>
+	<!--s:Image source="{data.change>0?iconUp:iconDown}" x="242" top="14"/-->
+	
+</s:DataRenderer>

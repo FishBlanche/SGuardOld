@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fxpProperties abbreviated="false" authoringTool="Flex Builder" compiles="true" parentProject="7fe329c1-9c60-4096-80b2-27229c7ae426" projectUUID="7fe329c1-9c60-4096-80b2-27229c7ae426" pureCatalystProject="false" sdkVersion="4.10.0" uuid="17ccfda9-569c-4a46-b73b-dd2ede7aca4f" version="15">
+  <projects/>
+  <src/>
+  <swc>
+    <linked location="sdkPlaceHolder" path="sdkPlaceHolder" position="0" uuid="17ccfda9-569c-4a46-b73b-dd2ede7aca4f"/>
+    <linked location="/libs" path="/libs" position="1" uuid="36794eaf-df59-4c29-a26e-7113db79809b"/>
+    <linked location="${PROJECT_FRAMEWORKS}/libs/mx/mx.swc" path="${PROJECT_FRAMEWORKS}/libs/mx/mx.swc" position="2" uuid="36794eaf-df59-4c29-a26e-7113db79809b"/>
+    <linked location="${DCD_LIB_LOCATION}/serializers.swc" path="${DCD_LIB_LOCATION}/serializers.swc" position="3" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_LOCALE_LOCATION}/serializers_rb.swc" path="${DCD_LOCALE_LOCATION}/serializers_rb.swc" position="4" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_FIBER_LOCATION}/fiber.swc" path="${DCD_FIBER_LOCATION}/fiber.swc" position="5" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_LIB_LOCATION}" path="${DCD_LIB_LOCATION}" position="6" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_LOCALE_LOCATION}" path="${DCD_LOCALE_LOCATION}" position="7" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_FIBER_LOCALE_LOCATION}/fiber_rb.swc" path="${DCD_FIBER_LOCALE_LOCATION}/fiber_rb.swc" position="8" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_FIBER_LOCATION}/playerfds.swc" path="${DCD_FIBER_LOCATION}/playerfds.swc" position="9" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="E:/Documents/suzhou/MobileSense/libs/MonsterDebugger.swc" path="/libs/MonsterDebugger.swc" position="10" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+    <linked location="${DCD_FIBER_LOCALE_LOCATION}" path="${DCD_FIBER_LOCALE_LOCATION}" position="11" uuid="a3cc2827-8f77-480e-8cb3-fa3af351cd06"/>
+  </swc>
+  <misc/>
+  <theme/>
+  <mxmlFormattingPrefs groupAttributesByState="true" maxLineWidth="100" mxmlAlignAttributes="true" mxmlAttributeOrder="id,userLabel,includeIn,excludeFrom,visible,x,y,z,left,right,top,bottom,width,height,minWidth,minHeight,maxWidth,maxHeight,label" mxmlKeepAttributeValuesOrganized="true"/>
+</fxpProperties>

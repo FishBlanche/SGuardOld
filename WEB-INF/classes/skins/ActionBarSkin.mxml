@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Christophe Coenraets, http://coenraets.org -->
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		 creationComplete="skin1_creationCompleteHandler(event)">
+	<!-- host component -->
+	<fx:Metadata>
+		[HostComponent("spark.components.ActionBar")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.CursorManager;
+		
+			/* public var mycallout:TipCallout ;
+			public var mycalloutState:Boolean = false; 
+			public var logincallout:LoginCallout = new LoginCallout(); */
+			
+			public function user_creationCompleteHandler(e:Event):void
+			{
+//				user.addEventListener(MouseEvent.CLICK,user_click);
+			}
+			public function info_creationCompleteHandler(e:Event):void
+			{
+//				info.addEventListener(MouseEvent.CLICK,info_click);
+		
+				FlexGlobals.topLevelApplication.tipSate.addEventListener("_TipViewed",TipViewed);
+			}
+	
+			protected function TipViewed(event:Event):void
+			{
+				trace("_TipViewed");
+//				info.source="assets/info.png";
+			}
+			protected function user_click(e:MouseEvent):void
+			{
+				if(FlexGlobals.topLevelApplication.logincallout.isOpen) 
+				{
+					FlexGlobals.topLevelApplication.logincallout.close();
+					CursorManager.removeBusyCursor();
+					return;
+				}
+			}
+			protected function info_click(e:MouseEvent):void
+			{
+			   if(FlexGlobals.topLevelApplication.tipSate.state==false) FlexGlobals.topLevelApplication.tipSate.state=true;
+				if(FlexGlobals.topLevelApplication.mycalloutState) 
+				{
+					FlexGlobals.topLevelApplication.mycallout.close();
+					FlexGlobals.topLevelApplication.mycalloutState=false;
+					return;
+				}
+
+				FlexGlobals.topLevelApplication.mycalloutState=true;
+			}
+			
+			
+			
+			protected function skin1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				//trace("skin1_creationCompleteHandler");
+				
+			}
+			
+			protected function busy_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Style>
+		.busyStyle { 
+			fontSize: 20px;
+			color: #FFFFFF;
+		}
+	</fx:Style>
+	<!-- states -->
+	<s:states>
+		<s:State name="titleContentWithActionAndNavigation" />
+		<s:State name="titleContentWithNavigation" />
+		<s:State name="titleContentWithAction" />
+		<s:State name="titleContent" />
+		<s:State name="titleWithActionAndNavigation" />
+		<s:State name="titleWithNavigation" />
+		<s:State name="titleWithAction" />
+		<s:State name="title" />
+	</s:states>
+
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+
+	<s:Image source="@Embed('assets/background.png')" scaleMode="stretch" left="0" right="0"/>
+
+	<s:HGroup width="100%">
+		<s:Group id="navigationGroup">
+			
+		</s:Group>
+		
+		<s:Image source="@Embed('assets/logo.png')" x="60"/>
+		
+		<s:Group id="titleGroup" width="80%">
+		</s:Group>
+		<!--s:HGroup>
+			<s:Image id="user" source="assets/user.png" width="80"  height="48"  creationComplete="user_creationCompleteHandler(event)"/>
+			<s:Image id="info" source="assets/info.png" width="80" creationComplete="info_creationCompleteHandler(event)"/>
+		</s:HGroup-->
+		<s:BusyIndicator id="busy" visible="{FlexGlobals.topLevelApplication.GlobalBusy}" width="60" height="60" right="0" creationComplete="busy_creationCompleteHandler(event)"  symbolColor="#FFFFFF" >
+			
+		</s:BusyIndicator>
+		<s:Group id="actionGroup">
+			
+		</s:Group>
+		
+	</s:HGroup>
+	
+	
+</s:Skin>

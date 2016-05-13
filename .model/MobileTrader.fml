@@ -1,0 +1,22 @@
+
+<model xmlns="http://ns.adobe.com/Fiber/1.0">
+  <annotation name="VisualModeler">
+    <item name="auto-deploy">true</item>
+  </annotation>
+  <annotation name="ActionScriptGeneration">
+    <item name="FullyQualifyReferences">true</item>
+  </annotation>
+  <service name="Service">
+    <annotation name="VisualModeler">
+      <item name="x">114</item>
+      <item name="y">88</item>
+      <item name="width">115</item>
+      <item name="height">46</item>
+    </annotation>
+    <function name="getid" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+    </function>
+  </service>
+</model>

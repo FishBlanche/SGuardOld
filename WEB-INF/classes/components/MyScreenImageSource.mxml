@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SplashScreenImage xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		             xmlns:s="library://ns.adobe.com/flex/spark" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:SplashScreenImageSource
+		source="@Embed('assets/splash.jpg')"		
+		aspectRatio="portrait"/>
+	<s:SplashScreenImageSource
+		source="@Embed('assets/splash2.jpg')"	
+		aspectRatio="landscape"/>
+	<!-- iOS splashscreen image. -->
+<!--	<s:SplashScreenImageSource id="iosImage"
+							   source="@Embed('assets/splash2.jpg')"/>-->
+</s:SplashScreenImage>

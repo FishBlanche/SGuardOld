@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Christophe Coenraets, http://coenraets.org -->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		width="100%" height="100%" destructionPolicy="never"
+		backgroundColor="#F0F0F0"
+		xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:charts="charts.*"
+		creationComplete="init()">
+	
+	<fx:Style>
+		.issueTimelineHolder
+		{
+			background-color:#787878;
+		}
+		.issueTimelineChart
+		{
+			padding-top:5px;
+			padding-right:0;
+			padding-bottom:0;
+			padding-left:0;    
+		}
+		.timelineDateAxis
+		{
+			color:#F00000;
+		}
+		
+	</fx:Style>
+	<fx:Declarations>
+		<s:SolidColorStroke id="timelineDateAxisStroke" 
+							color="#000000"
+							weight="8" 
+							alpha="1"
+							caps="none"
+							/>
+		<s:SolidColorStroke id="timelineTickStroke"
+							color="#000000"/>
+		<s:DateTimeFormatter id="dataTipsFormatter"  dateTimePattern="HH:NN:SS MM/DD/YYYY" />
+	</fx:Declarations>
+	
+
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.messaging.ChannelSet;
+			import mx.messaging.channels.AMFChannel;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import charts.PortfolioChart;
+			
+			import components.IPWindow;
+			import components.SensorKind;
+			
+			private var myAMF:AMFChannel=new AMFChannel();
+			private var channelSet:ChannelSet=new ChannelSet();
+			private var ro:RemoteObject = new RemoteObject();
+			private var _chartdata:Array = new Array();
+			
+			private var Hchart:PortfolioChart;
+			private var Tchart:PortfolioChart;
+			private var Lchart:PortfolioChart;
+			private var CO2chart:PortfolioChart;
+			private var Magchart:PortfolioChart;
+			private var hchartdata:Array = new Array();
+			private var HClickItem:Boolean=true;
+			private var TClickItem:Boolean=true;
+			private var LClickItem:Boolean=true;
+			private var CO2ClickItem:Boolean=true;
+			private var MagClickItem:Boolean=true;
+			private var lable:Label = new Label();
+			[Bindable]
+			private var childNum:int=0;
+
+			
+			public function init():void
+			{
+				myAMF.url=IPWindow.serverAddress.getProperty("serverAddress") as String;
+				trace(myAMF.url);
+				
+				if(myAMF.url == null ){
+					myAMF.url = "http://127.0.0.1:8080/dataservices-samples/messagebroker/amf";
+				}
+				channelSet.addChannel(myAMF); 
+				ro.channelSet = channelSet;
+				ro.destination = "SensingHistoryService";
+				ro.addEventListener(ResultEvent.RESULT,remoteobject1_resultHandler);
+				
+				//PC.addElement(Lchart);
+
+				
+				if(1==SensorKind.MoteHaveSensor(FlexGlobals.topLevelApplication.selectedID,'hum')){
+					Hchart = new PortfolioChart();
+					Hchart.itemSelected=0;
+					PC.addElement(Hchart);
+					HClickItem=true;				
+				}else{
+					HB.enabled = false;
+					HB.alpha = 0.4
+				}
+				
+				if(1==SensorKind.MoteHaveSensor(FlexGlobals.topLevelApplication.selectedID,'tem')){
+					Tchart = new PortfolioChart();
+					Tchart.itemSelected=1;
+					PC.addElement(Tchart);
+					TClickItem=true;				
+				}else{
+					TB.enabled = false;
+					TB.alpha = 0.4
+				}
+				
+				if(1==SensorKind.MoteHaveSensor(FlexGlobals.topLevelApplication.selectedID,'lig')){
+					Lchart = new PortfolioChart();
+					Lchart.itemSelected=2;
+					PC.addElement(Lchart);
+					LClickItem=true;				
+				}else{
+					LB.enabled = false;
+					LB.alpha = 0.4
+				}
+				
+				if(1==SensorKind.MoteHaveSensor(FlexGlobals.topLevelApplication.selectedID,'co2')){
+					CO2chart = new PortfolioChart();
+					CO2chart.itemSelected=3;
+					PC.addElement(CO2chart);
+					CO2ClickItem=true;				
+				}else{
+					co2.enabled = false;
+					co2.alpha = 0.4
+				}
+				
+				if(1==SensorKind.MoteHaveSensor(FlexGlobals.topLevelApplication.selectedID,'mag')){
+					Magchart = new PortfolioChart();
+					Magchart.itemSelected=4;
+					PC.addElement(Magchart);
+					MagClickItem=true;				
+				}else{
+					mag.enabled = false;
+					mag.alpha = 0.4
+				}
+							
+				ro.getFixedNumberMoteHistoryByMoteID({MoteID:FlexGlobals.topLevelApplication.selectedID,days:FlexGlobals.topLevelApplication.selectedDays});
+				FlexGlobals.topLevelApplication.GlobalBusy = true;
+			}
+			
+			
+			protected function remoteobject1_resultHandler(event:ResultEvent):void
+			{
+				var tmp:ArrayCollection  =(event.result as ArrayCollection);
+				var takenum:int=Math.floor(tmp.length/1500);
+				var removenum:int=0;
+				if(takenum>1){
+					for(var i:int=0;i<tmp.length;)
+					{
+						for(var j:int=1;j<takenum&&(i+1)<tmp.length;j++)
+						{
+							tmp.removeItemAt(i+1);
+							removenum++;
+						}
+						i=i+1;
+					}
+					tmp.refresh();
+				}
+				chartdata= tmp.toArray();
+				FlexGlobals.topLevelApplication.GlobalBusy = false;
+			}
+
+			public function get chartdata():Array
+			{
+				return _chartdata;
+			}
+
+			public function set chartdata(data:Array):void
+			{
+				
+			    _chartdata = data;
+			
+				if(Hchart)Hchart.data=data;
+				if(Tchart)Tchart.data=data;
+				if(Lchart) Lchart.data=data;
+				if(CO2chart)CO2chart.data=data;
+				if(Magchart)Magchart.data=data;
+				
+			}
+			
+			protected function DaysChange(days:Number,e:MouseEvent):void
+			{
+				FlexGlobals.topLevelApplication.selectedDays=days;			
+				ro.getFixedNumberMoteHistoryByMoteID({MoteID:FlexGlobals.topLevelApplication.selectedID,days:FlexGlobals.topLevelApplication.selectedDays});
+				FlexGlobals.topLevelApplication.GlobalBusy = true;
+				day5.alpha=0.4;
+				day15.alpha=0.4;
+				month1.alpha=0.4;
+				//month6.alpha=0.4;
+				(e.currentTarget as Image).alpha=1;
+			}
+            public function  itemClickHandler(type:int,e:MouseEvent):void
+			{
+				//HB.alpha = 0.4;
+				//TB.alpha = 0.4;
+				//LB.alpha = 0.4;
+				//(e.currentTarget as Image).alpha=1;
+				if(!HClickItem && type==0)
+				{
+					PC.addElement(Hchart);
+					HB.alpha = 1;
+					HClickItem=true;
+				}
+				else if(HClickItem && type==0)
+				{
+					PC.removeElement(Hchart);
+					HB.alpha = 0.4;
+					HClickItem=false;
+				}
+				if(!TClickItem && type==1)
+				{
+					PC.addElement(Tchart);
+					TB.alpha = 1;
+					TClickItem=true;
+					
+				}
+				else if(TClickItem && type==1)
+				{
+					PC.removeElement(Tchart);
+					TB.alpha = 0.4;
+					TClickItem=false;
+				}
+				else if(!LClickItem && type==2)
+				{
+					PC.addElement(Lchart);
+					LB.alpha = 1;
+					LClickItem=true;
+				}
+				else if(LClickItem && type==2)
+				{
+					PC.removeElement(Lchart);
+					LB.alpha = 0.4;
+					LClickItem=false;
+				} else if(!CO2ClickItem && type==3)
+				{
+					PC.addElement(CO2chart);
+					co2.alpha = 1;
+					CO2ClickItem=true;
+				}
+				else if(CO2ClickItem && type==3)
+				{
+					PC.removeElement(CO2chart);
+					co2.alpha = 0.4;
+					CO2ClickItem=false;
+				}else if(!MagClickItem && type==4)
+				{
+					PC.addElement(Magchart);
+					mag.alpha = 1;
+					MagClickItem=true;
+				}
+				else if(MagClickItem && type==4)
+				{
+					PC.removeElement(Magchart);
+					mag.alpha = 0.4;
+					MagClickItem=false;
+				} 
+		
+			}
+				
+			
+		]]>
+	</fx:Script>
+	<s:navigationContent>
+		<s:Button icon="@Embed('assets/back.png')" click="navigator.popView()"  height="55"/>
+	</s:navigationContent>
+	<s:VGroup>
+		<s:HGroup>
+			<s:Image   id="day5" source="assets/sz.png" width="80" click="DaysChange(5,event)"  alpha="1"/>
+			<s:Image  id="day15" source="assets/sz.png" width="80" click="DaysChange(15,event)" alpha="0.4"/>
+			<s:Image id="month1" source="assets/sz.png" width="80"  click="DaysChange(30,event)" alpha="0.4"/>
+			<!--s:Image id="month6" source="assets/sz.png" width="80" click="DaysChange(180,event)" alpha="0.4"/-->
+			<s:Image id="HB"  source="assets/BS3.png" width="80" click="itemClickHandler(0,event)" height="48" />
+			<s:Image id="TB" source="assets/BS2.png" width="80"  click="itemClickHandler(1,event)"  height="48"/>
+			<s:Image id="LB" source="assets/BS1.png" width="80" click="itemClickHandler(2,event)"  height="48" />
+			<s:Image id="co2" source="assets/CO23.png" width="80"  click="itemClickHandler(3,event)"  height="48"/>
+			<s:Image id="mag" source="assets/mag.png" width="80" click="itemClickHandler(4,event)"  height="48" />
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="5D" width="80"  textAlign="center"/>
+			<s:Label text="15D" width="80"  textAlign="center"/>
+			<s:Label text="1M" width="80"  textAlign="center"/>
+			<!--s:Label text="6M" width="80"  textAlign="center"/-->
+			<s:Label text="Hum." width="80"  textAlign="center"/>
+			<s:Label text="Temp." width="80"  textAlign="center"/>
+			<s:Label text="Light" width="80"  textAlign="center"/>
+			<s:Label text="Value" width="80"  textAlign="center"/>
+			<s:Label text="Mag" width="80"  textAlign="center"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+	 <s:VGroup styleName="issueTimelineHolder" width="100%" height="100%" id="PC" gap="-1">
+		
+	</s:VGroup>
+	
+</s:View>

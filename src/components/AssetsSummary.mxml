@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Christophe Coenraets, http://coenraets.org -->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:charts="charts.*"
+		 creationComplete="inittt(event)" currentState="grid" mouseDown="rotateContent()"
+		 resize="resizeHandler(event)">	
+	<fx:Script>
+		<![CDATA[
+			import components.DataPump;
+			import components.DataPumpHelper;
+			import components.SensingDataFormat;
+			
+			import model.SensingEntry;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.events.ResizeEvent;
+			import mx.utils.ObjectProxy;
+			
+			import components.SensorKind;
+			
+			private function inittt(event:Event):void{
+				datap.addEventListener("_newSensingData",newData);
+	//			trace("event _newSensingData registered");
+			}
+			private  var datapump:DataPumpHelper  = new DataPumpHelper();
+			private  var datap:DataPump = datapump.getDataPump();
+		
+			//datapump.getDataPump().addEventListener("_newSensingData",handleNameChanged1);
+			
+			protected function newData(event:Event):void
+			{
+		//		trace("event _newSensingData catched");
+				items[0]["value"] = datapump.getDataPump().newestSensing.Moteid_ID;
+				
+				items[1]["value"] = SensingDataFormat.temperature(datapump.getDataPump().newestSensing);
+				items[2]["value"] = SensingDataFormat.humidity(datapump.getDataPump().newestSensing);
+				items[3]["value"] = SensingDataFormat.light(datapump.getDataPump().newestSensing);
+				items[4]["value"] = SensingDataFormat.type(datapump.getDataPump().newestSensing);
+				items[5]["value"] = SensingDataFormat.co2(datapump.getDataPump().newestSensing);
+				
+			//	items[6]["value"] = SensingDataFormat.magStenth(datapump.getDataPump().newestSensing);
+				
+			}
+			public static var iniValue:SensingEntry = new SensingEntry;
+			iniValue.Moteid_ID = 1;
+			iniValue.temperature = 23;
+			iniValue.humidity = 46;
+			iniValue.light = 0;
+			iniValue.co2 = 0;
+			iniValue.type = 0;
+			
+			[Bindable]
+			protected var items:ArrayCollection = new ArrayCollection([
+				new ObjectProxy(Object({label: "Mote", value: iniValue.Moteid_ID, change: -2.37})),
+				new ObjectProxy(Object({label: "Temp."+SensorKind.getUnit('tem'), value:  SensingDataFormat.temperature(iniValue), change: -2.37})),
+				new ObjectProxy(Object({label: "Hum."+SensorKind.getUnit('hum'), value:  SensingDataFormat.humidity(iniValue), change: 10.98})),
+				new ObjectProxy(Object({label: "Light"+SensorKind.getUnit('lig'), value:  SensingDataFormat.light(iniValue), change: 16.56})),
+				new ObjectProxy(Object({label: "Type", value:  SensingDataFormat.type(iniValue), change: 8.36})),
+				new ObjectProxy(Object({label: "Value", value:  SensingDataFormat.co2(iniValue), change: 8.36})),
+			//	new ObjectProxy(Object({label: "Mag."+SensorKind.getUnit('mag'), value:  SensingDataFormat.magStenth(iniValue), change: 8.36}))
+			]);
+
+			[Bindable]
+			protected var chartLeft:int;
+			
+			protected function resizeHandler(event:ResizeEvent):void
+			{
+				
+				if (FlexGlobals.topLevelApplication.width < 600)
+				{
+					if (currentState == "gridAndLine" || currentState == "gridAndBar" ) 
+						currentState = "grid";
+				}
+				else
+				{
+					if (currentState == "grid" || currentState == "line")
+					{
+						currentState = "gridAndLine";
+						chartLeft = 432;
+					}
+					else if  (currentState == "bar")
+					{
+						currentState = "gridAndBar";
+						chartLeft = 432;
+					}
+				}
+			}
+			
+			protected function rotateContent():void
+			{
+				if (currentState == "grid")
+				{
+					currentState = "line";
+					chartLeft = 171;
+				}
+				else if (currentState == "line")
+				{
+					currentState = "bar";
+					chartLeft = 171;
+				}
+				else if (currentState == "bar")
+				{
+					currentState = "grid";
+				}
+				else if (currentState == "gridAndLine")
+				{
+					currentState = "gridAndBar";
+					chartLeft = 432;
+				}
+				else if (currentState == "gridAndBar")
+				{
+					currentState = "gridAndLine";
+					chartLeft = 432;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:states>
+		<s:State name="grid"/>
+		<s:State name="line"/>
+		<s:State name="bar"/>
+		<s:State name="gridAndLine"/>
+		<s:State name="gridAndBar"/>
+		<s:State name="portrait"/>
+		<s:State name="landscape"/>
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+	<s:DataGroup id="headers" width="100%" dataProvider="{items}">
+		<s:layout>
+			<s:HorizontalLayout gap="1"/>
+		</s:layout>
+		
+
+		<s:itemRenderer>
+			<fx:Component>
+				<s:DataRenderer width="106">
+					<s:Label width="100%" height="40" backgroundColor="#919191" paddingRight="8"
+							 text="{data.label}" textAlign="center" verticalAlign="middle"/>
+					<!--s:Rect width="4" height="40">
+						<s:fill>
+							<s:SolidColor color="#FF5900"/>
+						</s:fill>
+					</s:Rect-->
+				</s:DataRenderer>
+			</fx:Component>
+		</s:itemRenderer>
+		
+	</s:DataGroup>
+	
+	<s:DataGroup id="grid" includeIn="grid,gridAndBar,gridAndLine" left="173" dataProvider="{items}"
+				 itemRenderer="renderers.AssetSummaryRenderer"
+				 width.gridAndBar="250"
+				 width.gridAndLine="260">
+		<s:layout>
+			<s:HorizontalLayout gap="1"/>
+		</s:layout>
+		
+	
+	</s:DataGroup>
+	
+	
+	
+	<!--charts:SummaryChart id="line" includeIn="line,gridAndLine" right="0" top="0" left="{chartLeft}"/>
+	<charts:BarChart id="bar" includeIn="bar,gridAndBar" right="0" top="0" left="{chartLeft}"/-->
+	
+</s:Group>

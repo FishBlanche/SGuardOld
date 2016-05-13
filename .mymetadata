@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="MobileTrader"
+  id="myeclipse.1341316337772"
+  context-root="/datasource-samples"
+  j2ee-spec="6.0"
+  archive="MobileTrader.war">
+  <attributes>
+    <attribute name="webrootdir" value="&lt;prjroot&gt;" />
+  </attributes>
+</project-module>
+

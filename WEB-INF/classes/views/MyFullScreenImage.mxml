@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- containers\spark\myComponents\MyAlertPopUp.mxml -->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:components="components.*"
+		xmlns:charts="charts.*"
+		width="400" height="400"
+		creationComplete="skinnablepopupcontainer1_creationCompleteHandler(event)"
+		destructionPolicy="never" title="MyFullScreen">
+	
+	<fx:Declarations>
+		<mx:Glow id="glowImage" alphaFrom="1.0" alphaTo="0.3" blurXFrom="0.0" blurXTo="50.0"
+				 blurYFrom="0.0" blurYTo="50.0" color="0x00FF00" duration="1000"/>
+		<mx:Glow id="unglowImage" alphaFrom="0.3" alphaTo="1.0" blurXFrom="50.0" blurXTo="0.0"
+				 blurYFrom="50.0" blurYTo="0.0" color="0x0000FF" duration="1000"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+		//	import com.demonsters.debugger.MonsterDebugger;
+			import mx.controls.ToolTip;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.ToolTipManager;
+		
+			import spark.components.Image;		
+			import components.DataPump;
+			import components.DataPumpHelper;
+			import components.DrawDataPath;
+			import components.SensorKind;
+			
+			import controller.SensingFeed;
+			
+			import model.NodeEntry; 
+		//	public  var MoteArray:Array = new Array();
+			public var feed:SensingFeed=FlexGlobals.topLevelApplication.feed;
+		//	protected var nf:NumberFormatter = new NumberFormatter();
+			[Bindable]
+			public static var moteIDMap:Dictionary = new Dictionary;//icon to ID
+			public static var moteIDPos:Dictionary = new Dictionary;//id to position
+			public  var moteToolTipMap:Dictionary = new Dictionary;//icon to tooltip object
+		//	[Bindable]	public  var moteMsgMap:Dictionary = new Dictionary;//icon to tolltip msg
+			//[Bindable] public var content:String;
+			
+			[Bindable]
+			private var bary:Number = 70;
+			//[Bindable] static private var b:Bitmap =null;
+			[Bindable]
+			//static private var iconArray:ArrayCollection =new ArrayCollection;
+			private  var datapump:DataPumpHelper  = new DataPumpHelper();
+			private  var datap:DataPump = datapump.getDataPump();
+			
+			private var path:DrawDataPath;
+			private var dataTraceEnable:Boolean=true;
+			private var IsToolTipVisible:Boolean=true;
+			private var labelTemp:int=1;
+			private var labelHum:int=1;
+			private var labelLig:int=1;
+			private var labelCo2:int=1;
+			private var labelKind:int=labelTemp<<3|labelHum<<2|labelLig<<1|labelCo2;
+			private var preActiveMoteID:String="-100";	
+			/*	private function loaderCompleteHandler(evt:Event):void{
+			var ldr:Loader = Loader(evt.target.loader);
+			b= Bitmap(ldr.content);
+			}*/
+			
+			protected function skinnablepopupcontainer1_creationCompleteHandler(event:FlexEvent):void
+			{
+/*				MonsterDebugger.initialize(this);
+				MonsterDebugger.trace(this,"hhhh");	*/		
+				bary = stage.height/2.0 - dockbar1.height/2.0 >0 ? stage.height/2.0 - dockbar1.height/2.0:0;
+				dockbar1.y = bary;
+				
+				datap.addEventListener("_newSensingData",newData); return;
+			}
+			
+			
+/*			private function orientationChangeHandler(event:StageOrientationEvent):void{
+				return;
+				for(var e:Object in iconArray){
+					var msg:String = new String
+					var i:Image  = iconArray[e] as Image;
+					if(moteToolTipMap[i]!=null){
+						var tt:ToolTip = moteToolTipMap[i] as ToolTip;
+						tt.move(i.x+i.width,i.y);				
+					}	
+					
+				}
+			}
+			*/
+	/*		private function stageResized(event:ResizeEvent):void
+			{
+				return ;
+				for(var e:Object in moteIDMap){
+					var msg:String = new String
+					var i:Image  = e as Image;
+					var x:Number = Number(i.x);
+					i.x =  (x/(1.0*event.oldWidth)) * dataT.width ;
+					i.y = (Number(i.y)/(event.oldHeight*1.0))* dataT.height;
+					
+				}
+				startShow_clickHandler(null);
+				
+			}
+			*/
+			
+			
+			private function getMsgByMoteID(id:Number):String{
+				var stockCount:int = feed.newestSensingList.length;
+				var Msg:String = "select ID for me";
+				if(id<0) return Msg;
+			//	nf.precision = 2;
+				for (var k:int = 0; k < stockCount; k++)
+				{				
+					if(feed.newestSensingList.getItemAt(k).Moteid_ID == id){
+						Msg = SensorKind.get_tooltip_msg(feed.newestSensingList.getItemAt(k),labelKind);					
+						return Msg;					
+					}
+					
+				}
+				
+				return Msg;
+			}
+			protected function newData(event:Event):void
+			{   
+				var moteid:String = datap.newestSensing.Moteid_ID.toString();
+				//	trace("moteid:"+moteid);
+				var stockCount:int = feed.newestSensingList.length;
+				for(var e:Object in moteIDMap){
+					var i:Image  = e as Image;
+					if(i.id==moteid&&moteToolTipMap[i]!=null){
+						var glow:Glow =new Glow(i);
+						glow.alphaFrom=0;
+						glow.alphaTo=1;
+						glow.blurXFrom=60;
+						glow.blurYFrom=60;
+						glow.strength=5;
+						glow.color=0xff0000;
+						glow.duration=2000;
+						glow.play(null,true);					
+						moteToolTipMap[i].text = SensorKind.get_tooltip_msg(datap.newestSensing,labelKind);							
+						if(!IsToolTipVisible){
+							moteToolTipMap[i].visible=true;
+						}
+					}else if((!IsToolTipVisible)&&(i.id==preActiveMoteID)){
+						moteToolTipMap[i].visible=false;						
+					}									
+				}
+				preActiveMoteID=moteid;
+				if(moteIDPos[moteid]!=null){
+					if(path!=null&&dataTraceEnable){
+						path.drawPath(moteid,datap.newestSensing.path,datap.newestSensing.Cluster_id.toString());	
+					}								
+				}
+				
+			}
+			private function showTrace():void{
+				if(path!=null&&dataTraceEnable){
+					path.hidePath();
+					dataTraceEnable=false;
+					showTraceBtn.alpha=0.4;
+					
+				}else{					
+					dataTraceEnable=true;
+					showTraceBtn.alpha=1;
+				}
+			}
+			
+			[Bindable] [Embed (source="assets/node/HTL.png")] private static var HTL:Class;
+			[Bindable] [Embed (source="assets/node/HTLCO2.png")] private static var HTLCO2:Class;
+			[Bindable] [Embed (source="assets/node/HTLCH4.png")] private static var HTLCH4:Class;
+			[Bindable] [Embed (source="assets/node/HTLCO.png")] private static var HTLCO:Class;
+			[Bindable] [Embed (source="assets/node/HTLDVST.png")] private static var HTLDUST:Class;
+			[Bindable] [Embed (source="assets/node/HTLH2s.png")] private static var HTLH2S:Class;
+			[Bindable] [Embed (source="assets/node/HTLNO2.png")] private static var HTLNO:Class;
+			[Bindable] [Embed (source="assets/node/HTLSO2.png")] private static var HTLSO2:Class;
+			[Bindable] [Embed (source="assets/node/LC.png")] private static var LC:Class;
+			[Bindable] [Embed (source="assets/node/HTC.png")] private static var HTC:Class;
+			[Bindable] [Embed (source="assets/node/HT.png")] private static var HT:Class;
+			[Bindable] [Embed (source="assets/button/ShowLabel.png")] private static var icon_show_all:Class;
+			[Bindable] [Embed (source="assets/button/ShowPath.png")] private static var icon_show_path:Class;
+			[Bindable] [Embed (source="assets/button/temp.png")] private static var icon_temp:Class;
+			[Bindable] [Embed (source="assets/button/hum.png")] private static var icon_hum:Class;
+			[Bindable] [Embed (source="assets/button/light.png")] private static var icon_light:Class;
+			[Bindable] [Embed (source="assets/ground.png")] private static var back_ground:Class;
+			[Bindable] [Embed (source="assets/button/co2.png")] private static var icon_co2:Class;
+			
+			private function labelKindChanged(i:int):void{
+				switch(i){
+					case 0:
+						if(IsToolTipVisible){						
+							IsToolTipVisible=false;		
+							hide_or_show_tooltips(IsToolTipVisible);
+							showallbtn.alpha=0.4;
+						}else{
+							
+							IsToolTipVisible=true;	
+							hide_or_show_tooltips(IsToolTipVisible);
+							showallbtn.alpha=1;
+						}
+						break;
+					case 1:
+						if(labelTemp==1){
+							labelTemp=0;
+							showtempbtn.alpha=0.4;
+						}else{
+							labelTemp=1;
+							showtempbtn.alpha=1;
+						}
+						break;
+					case 2:
+						if(labelHum==1){
+							labelHum=0;
+							showhumbtn.alpha=0.4;
+						}else{
+							labelHum=1;
+							showhumbtn.alpha=1;
+						}
+						break;
+					case 3:
+						if(labelLig==1){
+							labelLig=0;
+							showlightbtn.alpha=0.4;
+						}else{
+							labelLig=1;
+							showlightbtn.alpha=1;
+						}
+						break;
+					case 4:
+						if(labelCo2==1){
+							labelCo2=0;
+							showco2btn.alpha=0.4;
+						}else{
+							labelCo2=1;
+							showco2btn.alpha=1;
+						}
+						break;
+					case 5:
+						showTrace();
+						break;
+				}
+				labelKind=labelTemp<<3|labelHum<<2|labelLig<<1|labelCo2;
+				update_all_tooltip();
+			}
+			
+			private function imgCreateComplete(event:FlexEvent):void{
+				startShow_clickHandler(null);
+			}
+			
+			
+			private function mouseClicked(event:MouseEvent):void{		
+				if(moteToolTipMap[event.currentTarget]!=null){				
+					moteToolTipMap[event.currentTarget].visible=moteToolTipMap[event.currentTarget].visible?false:true;
+					//trace(moteToolTipMap[event.currentTarget].text);
+				}				
+			}
+			
+			protected function startShow_clickHandler(event:MouseEvent):void//show tooltips
+			{
+				for(var e:Object in moteIDMap){
+					var i:Image  = e as Image;
+					var Msg:String = getMsgByMoteID(moteIDMap[i]);
+					
+					if(moteToolTipMap[i]==null){					
+						
+						if((dataT.width-i.x)<100){
+							moteToolTipMap[i] =  ToolTipManager.createToolTip(Msg, i.x-10,i.y+30,null,i) as ToolTip;
+						}else{
+							moteToolTipMap[i] =  ToolTipManager.createToolTip(Msg, i.x+30,i.y,null,i) as ToolTip;
+						}
+						
+						moteToolTipMap[i].setStyle("styleName", "errorTip");
+					}else{
+						
+						moteToolTipMap[i].move(i.x+i.width,i.y);	
+						moteToolTipMap[i].text = Msg;
+					}
+					moteToolTipMap[i].depth=3;
+					dataT.addElement(moteToolTipMap[i]);
+					
+					//moteMsgMap[i] = msg;
+				}
+			}
+			private function update_all_tooltip():void{
+				//	labelKind=labelTemp<<3|labelHum<<2|labelLig<<1|labelCo2;
+				var icon:Image
+				for(var e:Object in moteIDMap){
+					icon=e as Image;
+					moteToolTipMap[icon]
+					for (var k:int = 0; k < feed.newestSensingList.length; k++)
+					{
+						if(feed.newestSensingList.getItemAt(k).Moteid_ID == moteIDMap[icon]){
+							moteToolTipMap[icon].text  = SensorKind.get_tooltip_msg(feed.newestSensingList.getItemAt(k),labelKind);
+							break;
+						}
+					}
+					
+				}
+			}		
+			protected function hide_or_show_tooltips(v:Boolean):void//hide tooltips
+			{
+				var i:Image;
+				if(v){
+					for(var e:Object in moteIDMap){
+						i = e as Image;	
+						if(moteToolTipMap[i]!=null){
+							moteToolTipMap[i] .visible = true;	}			
+					}
+				}else{
+					for(var o:Object in moteIDMap){
+						i = o as Image;	
+						if(moteToolTipMap[i]!=null){
+							moteToolTipMap[i] .visible = false;	}
+					}
+				}
+			}
+			
+		/*	protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				for(var e:Object in moteIDMap){
+					var i:Image  = e as Image;
+					if(moteToolTipMap[i]==null) continue;
+					ToolTipManager.destroyToolTip(moteToolTipMap[i]);
+					moteToolTipMap[i] = null;
+				}
+			}*/
+	
+			protected function dataT_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+				// create icons for all the motes in the newestSensings list, also show the tooltips;
+				//steps 1 add icons
+
+					for (var e:Object in FlexGlobals.topLevelApplication.nodefeed.nodes)
+					{
+						var node:NodeEntry = FlexGlobals.topLevelApplication.nodefeed.nodes.getItemAt(e) as NodeEntry;
+						
+						if(node!=null){							
+							var img:Image = new Image();
+							img.id = node.Moteid_ID;
+							switch(node.NodeType){
+								case 1:
+									img.source=HT;
+									break;
+								case 2:
+									img.source=LC;
+									break;
+								case 3:
+									img.source=HTL;
+									break;						
+								case 4:
+									img.source=HTLCO2;
+									break;
+								case 5:
+									img.source=HTC;
+									break;
+								case 6:
+									img.source=HTLCO;
+									break;
+								case 7:
+									img.source=HTLCH4;
+									break;
+								case 8:
+									img.source=HTLDUST;
+									break;
+								case 9:
+									img.source=HTLH2S;
+									break;
+								case 11:
+									img.source=HTLNO;
+									break;
+								case 12:
+									img.source=HTLSO2;
+									break;
+								default:
+									img.source=HT;								
+							}
+							img.depth=2;
+							dataT.addElement(img);							
+							
+							img.x =node.Location_X*dataT.width/1000;
+							img.y =node.Location_Y*dataT.height/1000;
+							img.addEventListener(MouseEvent.MOUSE_DOWN,mouseClicked);
+							moteIDPos[img.id]=new Point(img.x+img.sourceWidth/2,img.y+img.sourceHeight/2);			
+							
+							moteIDMap[img] = node.Moteid_ID;
+						}}
+			
+				
+				path =new DrawDataPath(dataT,moteIDPos);
+				
+				startShow_clickHandler(null);
+			}
+			
+		/*	protected function dataT_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				//	button1_clickHandler(null);
+			}
+			
+			protected function deploySensor_faultHandler(event:DataServiceFaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				trace("hell");
+				
+			}			
+			
+			
+			protected function view1_addedToStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				//stage.autoOrients = false;
+			}
+			
+			
+			protected function nodeInfo_faultHandler(event:DataServiceFaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				trace("nodeInfo_faultHandler\n");
+				
+			}
+			
+			protected function nodeInfo_conflictHandler(event:DataConflictEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function nodeInfo_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				//trace("hell\n");
+			}*/
+			
+		]]>
+		
+	</fx:Script>
+	<s:HGroup width="200%" height="100%" verticalAlign="middle">
+		<s:VGroup id="dockbar1" x="0" y="100">		
+			<s:Image id="showtempbtn" alpha="1" click="labelKindChanged(1)" source="{icon_temp}"/>
+			<s:Image id="showhumbtn" alpha="1" click="labelKindChanged(2)" source="{icon_hum}"/>
+			<s:Image id="showlightbtn" alpha="1" click="labelKindChanged(3)" source="{icon_light}"/>
+			<s:Image id="showco2btn" alpha="1" click="labelKindChanged(4)" source="{icon_co2}"/>
+			<s:Image id="showallbtn" alpha="1" click="labelKindChanged(0)" source="{icon_show_all}"/>
+			<s:Image id="showTraceBtn" alpha="1" click="labelKindChanged(5)" source="{icon_show_path}"/>
+			
+		</s:VGroup>	
+		<s:VGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+			<s:Group id="dataT" width="100%" height="100%"
+					 creationComplete="dataT_creationCompleteHandler(event)">		
+				<s:Rect width="100%" height="100%"> 
+					<s:fill> 
+						<s:BitmapFill id="background" fillMode="scale" smooth="true"
+									  source="{back_ground}" /> 
+					</s:fill> 
+				</s:Rect> 
+			</s:Group >
+			
+		</s:VGroup>
+		
+		
+	</s:HGroup>		
+	
+</s:View>
+

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:amcharts="http://www.amcharts.com/com_internal"
+		creationComplete="{init()}" title="MyTestView"
+		addedToStage="view1_addedToStageHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			
+			import model.SensingEntry;
+			import components.SensorKind;
+			
+		//	import controller.Feed;
+			import controller.HistoryFeed;
+			
+			import mx.core.FlexGlobals;
+			
+			
+			public var historyfeed:HistoryFeed;
+			
+			
+			
+			private function init():void
+			{
+				FlexGlobals.topLevelApplication.historyfeed.refresh();
+				historyfeed = FlexGlobals.topLevelApplication.historyfeed;
+				//historyfeed.refresh();
+				dg.dataProvider = historyfeed.historySensingList;
+			}
+			protected function view1_addedToStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+	</fx:Declarations>
+
+	<s:SkinnableContainer top="0" left="0" right="0" backgroundColor="#919191" height="40">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="0" paddingRight="0" paddingTop="0" gap="-1"/>
+		</s:layout>
+		<!--s:Button label="Id" width="13%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Mote" width="15%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+        <s:Button label="Hum." width="20%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Temp." width="20%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="light" width="20%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Time" width="27%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/-->
+		<s:Button label="Mote" width="11%" height="100%" skinClass="skins.ListHeaderButtonSkin" fontWeight="normal"/>
+		<s:Button label="Hum.{SensorKind.getUnit('hum')}" width="20%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Temp.{SensorKind.getUnit('tem')}" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Light{SensorKind.getUnit('lig')}" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Type" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Value" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Time" width="19%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+	</s:SkinnableContainer>
+	<s:List id="dg" itemRenderer="renderers.HistoryRenderer" width="100%" height="100%" fontSize="20"  top="40"
+			textAlign="center"  verticalCenter="center">
+		
+	</s:List>
+	
+	
+</s:View>

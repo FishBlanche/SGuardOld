@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<s:TabbedViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+								  xmlns:s="library://ns.adobe.com/flex/spark"
+								  xmlns:controller="controller.*"
+								  xmlns:components="components.*"
+								  splashScreenImage="components.MyScreenImageSource"
+								  splashScreenMinimumDisplayTime="5000"
+								  splashScreenScaleMode="stretch">
+	
+	<fx:Script>
+		<![CDATA[
+			//import baidu.map.overlay.Label;
+			
+
+			/**
+			 * The LiveCycle Collaboration Service (LCCS) room URL used for the real time collaboration feature
+			 * of this application (real time collaboration with financial advisor).
+			 */
+			
+
+			[Bindable]
+			public var  GlobalBusy:Boolean = true;		
+			public var selectedID:Number = 1;
+			public var selectedDays:Number=5;
+			public var selectedDaysstr:String="5天";
+
+			
+		/*	protected function applicationComplete():void
+			{
+				//loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
+				
+				stage.autoOrients = false;
+				tipSate.state=true;
+				//stage.setOrientation(StageOrientation.DEFAULT);
+				var persistenceManager:PersistenceManager = new PersistenceManager();
+				if (persistenceManager.load())
+				{
+					var url:Object = persistenceManager.getProperty("roomURL");
+					if (url)
+						roomURL = url.toString();
+				}
+			//	var moteidPopUp:InitialLoginWindow = new InitialLoginWindow;
+			//	moteidPopUp.addEventListener(PopUpEvent.CLOSE,closeTitleWindow);
+			//	tmppoptw = moteidPopUp;
+				
+
+			}
+
+			private function uncaughtErrorHandler(event:UncaughtErrorEvent):void
+			{
+				var win:PopMessageWindow = new PopMessageWindow();
+				if (event.error is Error)
+				{
+					var error:Error = event.error as Error;
+					
+					win.MS = error.message;
+					win.open(this);
+					// do something with the error
+				}
+				else if (event.error is ErrorEvent)
+				{
+					var errorEvent:ErrorEvent = event.error as ErrorEvent;
+					// do something with the error
+					win.MS = errorEvent.toString();
+					win.open(this);
+				}
+				else
+				{
+					// a non-Error, non-ErrorEvent type was thrown and uncaught
+				}
+			}*/
+		/*	protected function orientationChangeHandler(event:StageOrientationEvent):void
+			{
+				PopUpManager.removePopUp(tmppoptw);
+				
+			//	var moteidPopUp:InitialLoginWindow = new InitialLoginWindow;
+			//	moteidPopUp.addEventListener(PopUpEvent.CLOSE,closeTitleWindow);
+			//	tmppoptw = moteidPopUp;
+			//	tmppoptw.width = stage.fullScreenWidth;
+			//	tmppoptw.height = stage.fullScreenHeight;
+				
+			//	PopUpManager.addPopUp(moteidPopUp, this, true);
+			//	PopUpManager.centerPopUp(moteidPopUp);		
+				
+			}
+			private var tmppoptw:InitialLoginWindow;*/
+			
+			
+		/*	private function closeTitleWindow(evt:PopUpEvent):void {
+				//register moteID with icons;
+				PopUpManager.removePopUp(tmppoptw);
+			}
+			
+			protected function viewnavigator1_deactivateHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				//trace("navigator deactived");
+			}
+			
+			protected function tabbedviewnavigatorapplication1_preinitializeHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				//stage.autoOrients = false;
+				//stage.setOrientation(StageOrientation.ROTATED_LEFT);				
+			}
+			
+			protected function viewnavigator2_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				//stage.autoOrients = true;
+				trace("viewnavigator1 actived");
+			}*/
+			
+				
+			
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Style source="styles.css"/>
+	
+	<fx:Declarations>
+		<controller:SensingFeed id="feed"/>
+		<controller:HistoryFeed id="historyfeed"/>
+		<controller:NodeFeed id="nodefeed"/>
+	</fx:Declarations>
+	
+	<s:ViewNavigator width="100%" height="100%" label="Live"
+					 firstView="views.AssetsView"
+					 icon="@Embed('assets/chart_line_48.png')"/>
+	<s:ViewNavigator width="100%" height="100%" label="First Floor"
+					 
+					 firstView="views.MyFullScreenImage" icon="@Embed('assets/man_48.png')"/>
+
+    <s:ViewNavigator width="100%" height="100%" label="History" firstView="views.ManagerView"
+					 icon="@Embed('assets/clock.png')"/>	
+
+	
+</s:TabbedViewNavigatorApplication>

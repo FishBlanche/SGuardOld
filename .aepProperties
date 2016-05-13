@@ -1,0 +1,9 @@
+#Adobe Enterprise Suite Preferences
+#Wed May 30 13:27:05 CST 2012
+com.adobe.model.editor.design.preferences.designmode.defaultDeploymentHandler=default
+com.adobe.model.editor.design.preferences.designmode.defaultServerType=
+com.adobe.model.editor.design.preferences.designmode.id.is.generated=true
+com.adobe.model.editor.design.preferences.default.auto.deploy=true
+com.adobe.model.editor.design.preferences.designmode.livecycle.datatype=false
+com.adobe.model.editor.design.preferences.useProjectSettings=false
+com.adobe.model.editor.design.preferences.designmode.persistence=true

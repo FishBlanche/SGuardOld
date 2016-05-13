@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Christophe Coenraets, http://coenraets.org -->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:charts="charts.*" 
+		xmlns:views="views.*"
+		destructionPolicy="never" xmlns:components="components.*"
+		creationComplete="creationComplete()"
+		 activate="activateHandler()"
+		 deactivate="deactivateHandler()"
+		 addedToStage="view1_addedToStageHandler(event)">
+	
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import components.DataPump;
+			import components.DataPumpHelper;
+			import components.SensorKind;
+			import model.SensingEntry;
+			
+			import controller.Feed;
+			import controller.SensingFeed;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+
+			private  var datapump:DataPumpHelper  = new DataPumpHelper();
+			private  var datap:DataPump = datapump.getDataPump();
+			public var feed:SensingFeed;
+		
+
+			//begin to subscribe message of live feeding, singleton pattern
+			override public function setCurrentState(stateName:String, playTransition:Boolean=true):void
+			{
+				if (stateName == "landscape")
+				{
+					if (FlexGlobals.topLevelApplication.height<500)
+						super.setCurrentState("landscapeSmall", playTransition);
+					else if (FlexGlobals.topLevelApplication.height<600)
+						super.setCurrentState("landscapeMedium", playTransition);
+					else
+						super.setCurrentState("landscapeLarge", playTransition);
+				}
+				else
+				{
+					super.setCurrentState(stateName, playTransition);
+				}
+			}			
+			protected function creationComplete():void 
+			{
+				
+				feed = FlexGlobals.topLevelApplication.feed;
+				list.dataProvider = feed.newestSensingList;
+				
+				
+			}		
+		
+			protected function activateHandler():void 
+			{
+				//feed.subscribe();
+			}
+			
+			protected function deactivateHandler():void 
+			{
+				//feed.unsubscribe();
+			}
+			
+			protected function listChange():void
+			{			
+				navigator.pushView(LiveChartView, list.selectedItem);
+			//	var se:SensingEntry = list.selectedItem as SensingEntry;
+				FlexGlobals.topLevelApplication.selectedID = list.selectedItem.Moteid_ID;
+				FlexGlobals.topLevelApplication.selectedDays=5;
+				list.selectedIndex = -1;
+			}
+			
+			protected function view1_addedToStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				//stage.autoOrients = true;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:CurrencyFormatter id="cf" useCurrencySymbol="true" fractionalDigits="0" />
+		<s:NumberFormatter id="nf" fractionalDigits="2" />
+		
+	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="portrait"/>
+		<s:State name="landscape"/>
+		<s:State name="landscapeLarge"/>
+		<s:State name="landscapeMedium"/>
+		<s:State name="landscapeSmall"/>
+		<s:State name="landscapeHistory"/>
+	</s:states>
+	
+	
+	<s:Label text="Live Packages" top="16" left="20" fontSize="24" excludeFrom="landscapeMedium"
+			 color="#646464" 
+			 color.landscapeHistory="#999999"
+			 click.landscapeHistory="currentState='landscapeSmall'"/>
+
+	<components:AssetsSummary id="assetsSummary" top="50" top.landscapeMedium="16" left="20" right="20" excludeFrom="landscapeHistory"/>
+	
+	<!--s:Label text="Performance History" top="240" left="20" fontSize="24" excludeFrom="landscapeMedium"
+			 color="#646464"
+			 color.landscapeSmall="#999999"
+			 mouseDown.landscapeSmall="currentState='landscapeHistory'"
+			 top.landscapeSmall="16" left.landscapeSmall="170" 
+			 top.landscapeHistory="16" left.landscapeHistory="170" />
+	
+	<charts:SensingPortfolioChart id="chart" top="280" top.landscapeMedium="200" left="20" right="20" bottom="28" 
+						   excludeFrom="landscapeSmall" top.landscapeHistory="50" bottom.landscapeMedium="10"/-->
+	
+
+	<s:SkinnableContainer top="180" left="0" right="0" backgroundColor="#919191" height="40">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="0" paddingRight="0" paddingTop="0" gap="-1"/>
+		</s:layout>
+		<s:Button label="Mote" width="20%" height="100%" skinClass="skins.ListHeaderButtonSkin" fontWeight="normal"/>
+		<s:Button label="Hum.{SensorKind.getUnit('hum')}" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Temp.{SensorKind.getUnit('tem')}" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Light{SensorKind.getUnit('lig')}" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Type" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+		<s:Button label="Value" width="18%" height="100%" skinClass="skins.ListHeaderButtonSkinRightAlign" fontWeight="normal"/>
+	</s:SkinnableContainer>
+	
+	<s:List id="list" itemRenderer="renderers.SensingRenderer" borderVisible="false" 
+			top="220" left="0" right="0" bottom="0"
+			change="listChange()"/>
+	
+	<!--s:Label bottom="4" text="Select stock to see real time chart" fontSize="16" color="#AAAAAA" horizontalCenter="0"/>
+
+	<s:Label bottom="4" text="Swipe/zoom to navigate chart. Rotate device for bigger chart" fontSize="16" color="#AAAAAA" horizontalCenter="0" includeIn="portrait"/>
+	<s:Label bottom="4" text="Swipe/zoom to navigate chart." fontSize="16" color="#AAAAAA" horizontalCenter="0" includeIn="landscapeLarge,landscapeHistory"/>
+	<s:Label bottom="4" text="Rotate device for combined view." fontSize="16" color="#AAAAAA" horizontalCenter="0" includeIn="landscapeSmall"/-->
+	
+</s:View>
